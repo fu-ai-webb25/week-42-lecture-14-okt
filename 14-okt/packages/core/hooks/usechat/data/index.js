@@ -5,6 +5,7 @@ import {
     AIMessage,
     SystemMessage
 } from '@langchain/core/messages';
+import { invokeAssistant } from '@chat-app/assistant';
 
 export const useChat = () => {
     // messages innehåller det vi hämtar från localStorage
@@ -59,7 +60,19 @@ export const useChat = () => {
         setError(false);
 
         try {
+            const answer = await invokeAssistant(messages, question);
+            console.log('ANSWER', answer);
 
+            const aiMessage = new AIMessage(answer.content);
+
+            setMessages([
+                ...history,
+                aiMessage
+            ]);
+
+            if(answer.booking) {
+                setBooking(answer.booking);
+            }
         } catch (error) {
             setError(error.message);
         } finally {

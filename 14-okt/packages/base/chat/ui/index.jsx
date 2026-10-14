@@ -16,6 +16,8 @@ export const Chat = () => {
         review
     } = useChat();
 
+    console.log('BOOKING in CHAT', booking);
+
     const inputRef = useRef();
     const messagesRef = useRef(null);
 
