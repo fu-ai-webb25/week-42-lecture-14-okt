@@ -1,10 +1,10 @@
 import { llm } from "@chat-app/llm";
-import { getMovies, getShowtimes, createBooking, searchWeb } from "@chat-app/tools";
+import { getMovies, getShowtimes, createBooking, searchWeb, analyzeReviewTool } from "@chat-app/tools";
 import { ToolMessage } from "@langchain/core/messages";
 import { messagePrompt } from "@chat-app/prompts";
 
 // Våra tillgängliga verktyg
-const tools = [getMovies, getShowtimes, createBooking, searchWeb];
+const tools = [getMovies, getShowtimes, createBooking, searchWeb, analyzeReviewTool];
 
 // Koppla verktygen till modellen
 const llmWithTools = llm.bindTools(tools);
@@ -21,6 +21,9 @@ export const invokeAssistant = async (history, question) => {
     // Här spara vi ned en eventuell bokning
     let booking = null;
 
+    // Här spara vi ned en eventuell review
+    let review = null;
+
     for(let i = 0; i < 5; i++) {
         const response = i === 0
             ? await chain.invoke({ history, question })
@@ -36,7 +39,8 @@ export const invokeAssistant = async (history, question) => {
         if(!response.tool_calls?.length) {
             return {
                 content : response.content,
-                booking
+                booking, 
+                review
             }
         }
     
@@ -63,6 +67,12 @@ export const invokeAssistant = async (history, question) => {
                 if(data.success) {
                     booking = data.booking;
                 }
+            }
+
+            if (toolCall.name === "analyze_review") {
+                review = typeof result === "string"
+                    ? JSON.parse(result)
+                    : result;
             }
 
             // Skicka vertygets resultat tillbaks till modellen

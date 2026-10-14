@@ -70,8 +70,14 @@ export const useChat = () => {
                 aiMessage
             ]);
 
+            // Spara bokningen om en sådan skapats
             if(answer.booking) {
                 setBooking(answer.booking);
+            }
+
+            // Spara recensionen om en sådan skapats
+            if (answer.review) {
+                setReview(answer.review);
             }
         } catch (error) {
             setError(error.message);

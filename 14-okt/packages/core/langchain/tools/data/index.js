@@ -1,6 +1,7 @@
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { fetchMovies, fetchSearch } from '@chat-app/api';
+import { analyzeReview } from '@chat-app/review';
 
 export const getMovies = tool(
     async () => {
@@ -113,5 +114,23 @@ export const searchWeb = tool(
         schema : z.object({
             query : z.string().describe('Sökfrågan')
         }) 
+    }
+);
+
+export const analyzeReviewTool = tool(
+    async ({ review }) => {
+        const result = await analyzeReview(review);
+
+        return JSON.stringify(result);
+    },
+    {
+        name: "analyze_review",
+        description:
+            "Analyserar en filmrecension och tar fram filmens titel, betyg, känsla och sammanfattning.",
+        schema: z.object({
+            review: z.string().describe(
+                "Användarens filmrecension i sin helhet."
+            )
+        })
     }
 );
