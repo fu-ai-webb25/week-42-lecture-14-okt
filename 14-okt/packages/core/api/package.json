@@ -1,0 +1,4 @@
+{
+    "name" : "@chat-app/api",
+    "main" : "index.js"
+}
